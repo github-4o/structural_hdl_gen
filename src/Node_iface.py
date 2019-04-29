@@ -19,19 +19,26 @@ class Node_iface:
 # public
 ################################################################################
 
+    def connect_int_port(self, name, link):
+        if name not in self._ports:
+            self._ports[name]=Port(name, self)
+        self._ports[name].connect_int_port(link)
+
     def connect_ext_port(self, name, link):
         if name not in self._ports:
             self._ports[name]=Port(name, self)
-
         self._ports[name].connect_ext_port(link)
 
     def dump_entity(self):
         if len(self._ports) > 0:
-            raise Exception("not implemented")
+            ports=self._dump_int_ports("        ")
+        else:
+            ports=""
 
         return (
             "entity {} is\n".format(self._name)
             +"    port (\n"
+            +ports
             +"        iClk: in std_logic;\n"
             +"        iReset: in std_logic\n"
             +"    );\n"
@@ -110,6 +117,12 @@ class Node_iface:
         ret=""
         for i in self._ports:
             ret+=self._ports[i].dump_ext_ports(indent)
+        return ret
+
+    def _dump_int_ports(self, indent="        "):
+        ret=""
+        for i in self._ports:
+            ret+=self._ports[i].dump_int_ports(indent)
         return ret
 
 ################################################################################

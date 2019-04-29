@@ -24,6 +24,11 @@ class Port:
 # public
 ################################################################################
 
+    def connect_int_port(self, link):
+        slot=Port_slot(self, link, ext=False)
+        self._port_slots.append(slot)
+        link.connect(slot)
+
     def connect_ext_port(self, link):
         slot=Port_slot(self, link)
         self._port_slots.append(slot)
@@ -34,6 +39,15 @@ class Port:
             ret=""
             for i in self._port_slots:
                 ret+=i.dump_ext_ports(indent)
+            return ret
+        else:
+            raise Exception("this should never happen")
+
+    def dump_int_ports(self, indent):
+        if len(self._port_slots) > 0:
+            ret=""
+            for i in self._port_slots:
+                ret+=i.dump_int_ports(indent)
             return ret
         else:
             raise Exception("this should never happen")

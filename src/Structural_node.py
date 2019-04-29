@@ -17,7 +17,7 @@ class Structural_node(Node_iface):
     def create_ip_node(self, prototype, name=None):
         if name == None:
             name = prototype
-        self._nodes[name]=Ip_node(prototype, name)
+        self._nodes[name]=Ip_node(self, prototype, name)
 
     def connect(self, one, two, cfg=None, full_duplex=False):
         if isinstance(one, list):
@@ -25,6 +25,7 @@ class Structural_node(Node_iface):
                 self.connect(i, two, cfg, full_duplex)
         elif isinstance(one, str):
             if full_duplex == True:
+                raise Exception("to tested")
                 self.connect(one, two, cfg)
                 self.connect(two, one, cfg)
             else:
@@ -35,8 +36,15 @@ class Structural_node(Node_iface):
                 link=Link(cfg)
                 self._links.append(link)
 
-                self._connect_ext_port(node_one, port_one, link)
-                self._connect_ext_port(node_two, port_two, link)
+                if node_one == self.name:
+                    self._connect_int_port(port_one, link)
+                else:
+                    self._connect_ext_port(node_one, port_one, link)
+
+                if node_two == self.name:
+                    self._connect_int_port(port_two, link)
+                else:
+                    self._connect_ext_port(node_two, port_two, link)
         else:
             raise Exception("this should never happen")
 
@@ -56,9 +64,21 @@ class Structural_node(Node_iface):
         return ret
 
     def load_ifaces(self):
+        replace=[]
         for i in self._nodes:
             print("loading ifaces for node {}".format(self._nodes[i].name))
-            self._nodes[i]=self._nodes[i].load_ifaces()
+            replacement_node=self._nodes[i].load_ifaces()
+            new_name=replacement_node.name
+            if new_name != i:
+                replace.append((i, (new_name, replacement_node)))
+
+        for i in replace:
+            new_name=i[1][0]
+            replacement_node=i[1][1]
+            print("relpacing {}:{}".format(i[0], i[1][0]))
+            self._nodes.pop(i[0])
+            self._nodes[new_name]=replacement_node
+            self._nodes[new_name].post_register_hook()
 
 ################################################################################
 # protected
@@ -67,6 +87,9 @@ class Structural_node(Node_iface):
     def _get_node_port(self, name):
         ar=name.split(".", 1)
         return (ar[0], ar[1])
+
+    def _connect_int_port(self, port, link):
+        self.connect_int_port(port, link)
 
     def _connect_ext_port(self, name, port, link):
         if name not in self._nodes:

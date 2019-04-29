@@ -1,9 +1,13 @@
 class Port_slot:
-    def __init__(self, parent, link):
+    def __init__(self, parent, link, ext=True):
         self._parent=parent
         self._dir=None # for ext port
-        self._ext_link=link
-        self._int_link=None
+        if ext == True:
+            self._ext_link=link
+            self._int_link=None
+        else:
+            self._ext_link=None
+            self._int_link=link
 
     @property
     def name(self):
@@ -39,7 +43,16 @@ class Port_slot:
 ################################################################################
 
     def dump_ext_ports(self, indent):
-        return self._ext_link.dump_ext_ports(indent+self.name, self._dir)
+        if self._ext_link != None:
+            return self._ext_link.dump_ext_ports(indent+self.name, self._dir)
+        else:
+            return ""
+
+    def dump_int_ports(self, indent):
+        if self._int_link != None:
+            return self._int_link.dump_ext_ports(indent+self.name, self._dir)
+        else:
+            return ""
 
     def dump_ext_port_connections(self, indent):
         return self._ext_link.dump_ext_port_connections(indent+self.name)

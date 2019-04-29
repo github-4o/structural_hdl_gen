@@ -1,3 +1,4 @@
 
 rm output/* -f
-python3.5 main.py
+rm src/generators/__pycache__/*
+python3 main.py

@@ -5,12 +5,13 @@ from .Node_iface import Node_iface
 
 
 class Ip_node(Node_iface):
-    def __init__(self, prototype, name=None):
+    def __init__(self, parent, prototype, name=None):
         if name == None:
             n=prototype
         else:
             n=name
         super(Ip_node, self).__init__(n)
+        self._parent=parent
         self._prototype=prototype
         self._module=None
 
@@ -24,13 +25,11 @@ class Ip_node(Node_iface):
 
     def load_ifaces(self):
         self._module=self._load_module()
-        self._module.update(self)
-        return self
+        return self._module.update(self)
 
     def dump(self):
-        if self._module == None:
-            raise Exception("this should never happen")
-        return self._module.dump(self)
+        print("nothing to dump for ip node", self.name)
+        return []
 
 ################################################################################
 # protected

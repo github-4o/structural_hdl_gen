@@ -8,10 +8,12 @@ class Link:
         self._port1=None
         self._port2=None
         self._cfg=cfg
+
         self._number=__class__._number
         self._name="s{}".format(__class__._number)
-        self._iface_implementation=None
         __class__._number+=1
+
+        self._iface_implementation=None
         print("creating link {} with cfg {}".format(self.name, self._cfg))
 
     @property
