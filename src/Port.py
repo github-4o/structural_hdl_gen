@@ -4,7 +4,7 @@ from .Link import Link
 
 # this class could be implemented as a dictionaty in Node_iface
 class Port:
-    def __init__(self, name, parent):
+    def __init__(self, parent):
         self._parent=parent
         self._port_slots=[]
 

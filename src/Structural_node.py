@@ -104,11 +104,14 @@ class Structural_node(Node_iface):
 # debug
 ################################################################################
 
-    def report(self, node):
-        if node in self._nodes:
-            return self._nodes[node].report()
+    def report(self, node=None):
+        if node != None:
+            if node in self._nodes:
+                return self._nodes[node].report()
+            else:
+                return "node {} not found".format(node)
         else:
-            return "node {} not found".format(node)
+            self._report()
 
 ################################################################################
 # protected

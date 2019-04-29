@@ -10,6 +10,10 @@ class Port_slot:
             self._int_link=link
 
     @property
+    def dir(self):
+        return self._dir[:]
+
+    @property
     def name(self):
         index=self._parent.get_slot_index(self)
         if index != None:
@@ -55,7 +59,11 @@ class Port_slot:
             return ""
 
     def dump_ext_port_connections(self, indent):
-        return self._ext_link.dump_ext_port_connections(indent, self)
+        try:
+            return self._ext_link.dump_ext_port_connections(indent, self)
+        except:
+            print(self.report())
+            return ""
 
     def set_dir(self, portdir, propagate=True):
         if self._dir != None:
@@ -143,3 +151,8 @@ class Port_slot:
     @name.setter
     def name(self, x):
         raise Exception("this should never happen")
+
+    @dir.setter
+    def dir(self, x):
+        raise Exception("forbiden")
+        self._dir=x

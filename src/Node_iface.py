@@ -15,24 +15,25 @@ class Node_iface:
     def name(self):
         return self._name[:]
 
-
 ################################################################################
 # public
 ################################################################################
 
     def connect_int_port(self, name, link):
         if name not in self._ports:
-            self._ports[name]=Port(name, self)
+            self._ports[name]=Port(self)
+        else:
+            print(self._report())
+            raise Exception("break")
         self._ports[name].connect_int_port(link)
 
     def connect_ext_port(self, name, link):
         if name not in self._ports:
-            self._ports[name]=Port(name, self)
+            self._ports[name]=Port(self)
         self._ports[name].connect_ext_port(link)
 
     def dump_entity(self):
         my_type=self.report_my_type()
-        print("my type", my_type)
         if len(self._ports) > 0:
             if my_type == "Structural_node":
                 ports=self._dump_int_ports("        ")
@@ -139,6 +140,9 @@ class Node_iface:
 ################################################################################
 
     def report(self, indent=""):
+        return self._report()
+
+    def _report(self, indent=""):
         ports_report=""
         for i in self._ports:
             ports_report+=self._ports[i].report(indent+"  ")+"\n\n"
