@@ -8,7 +8,7 @@ def dump_files(hdl):
         with open("output/"+i[0], "w") as f:
             f.write(i[1])
 
-test=1
+test=0
 
 if test == 0:
 

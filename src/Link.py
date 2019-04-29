@@ -4,7 +4,8 @@ from importlib import import_module
 
 class Link:
     _number=0
-    def __init__(self, cfg):
+    def __init__(self, cfg, parent):
+        self._parent=parent
         self._port1=None
         self._port2=None
         self._cfg=cfg
@@ -13,7 +14,6 @@ class Link:
         self._name="s{}".format(__class__._number)
         __class__._number+=1
 
-        self._iface_implementation=None
         print("creating link {} with cfg {}".format(self.name, self._cfg))
 
     @property
@@ -51,24 +51,15 @@ class Link:
         raise Exception("all ports are occupied")
 
     def dump_signals(self, indent):
-        if self._iface_implementation == None:
-            return indent+"signal {}: ;\n".format(self._name)
-        else:
-            return self._iface_implementation.dump_signals(indent, self.name)
+        return indent+"signal {}: ;\n".format(self._name)
 
     # prefix = indent + name
     def dump_ext_ports(self, prefix, dir):
-        if self._iface_implementation == None:
-            return prefix+": ;\n"
-        else:
-            return self._iface_implementation.dump_ext_ports(prefix, dir)
+        return prefix+": ;\n"
 
     # prefix = indent + name
     def dump_ext_port_connections(self, prefix):
-        if self._iface_implementation == None:
-            return prefix+" => {},\n".format(self.name)
-        else:
-            return self._iface_implementation.dump_ext_port_connections(prefix)
+        return prefix+" => {},\n".format(self.name)
 
 # from one of the port slots
     def set_dir_for_other_port_slot(self, portdir, ps):
@@ -83,12 +74,11 @@ class Link:
     # from block generators....initially
     def load_implementation(self, t):
         print("loading implementation {} for link {}".format(t, self._name))
-        if self._iface_implementation == None:
-            module=self._load_module(t)
-            self._iface_implementation=module.create_inst(self)
-        else:
-            if t != self._iface_implementation.__class__.type:
-                raise Exception("implementation reloading detected")
+        module=self._load_module(t)
+        new_link=module.create_inst(self)
+        self._parent.replace_link(self, new_link)
+        self._port1.replace_link(self, new_link)
+        self._port2.replace_link(self, new_link)
 
 ################################################################################
 # private

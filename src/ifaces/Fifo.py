@@ -1,19 +1,13 @@
+from ..Link import Link
+
+
 def create_inst(cfg):
     return Fifo(cfg)
 
-class Fifo:
+class Fifo(Link):
     type="Fifo"
     def __init__(self, parent):
-        self._parent=parent
-
-    @property
-    def cfg(self):
-        return self._parent.cfg
-
-    @property
-    def name(self):
-        return self._parent.name
-
+        self.__dict__.update(parent.__dict__)
 
 ################################################################################
 # public
@@ -36,18 +30,14 @@ class Fifo:
             +prefix+"_data => {}_data,\n".format(self.name)
         )
 
-    def dump_signals(self, indent, prefix):
+    def dump_signals(self, indent):
         return (
-            indent+"signal "+prefix+"_nd: std_logic;\n"
-            +indent+"signal "+prefix+"_data: std_logic_vector ({} downto 0);\n".format(
+            indent+"signal "+self.name+"_nd: std_logic;\n"
+            +indent+"signal "+self.name+"_data: std_logic_vector ({} downto 0);\n".format(
                 self.cfg["width"]-1
             )
         )
 
-################################################################################
-# fix python
-################################################################################
-
-    @cfg.setter
-    def cfg(self, x):
-        raise Exception("forbiden")
+    def load_implementation(self, t):
+        if t != "Fifo":
+            raise Exception("this should never happen")

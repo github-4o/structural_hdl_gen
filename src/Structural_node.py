@@ -33,7 +33,7 @@ class Structural_node(Node_iface):
                 (node_one, port_one)=self._get_node_port(one)
                 (node_two, port_two)=self._get_node_port(two)
 
-                link=Link(cfg)
+                link=Link(cfg, self)
                 self._links.append(link)
 
                 if node_one == self.name:
@@ -79,6 +79,21 @@ class Structural_node(Node_iface):
             self._nodes.pop(i[0])
             self._nodes[new_name]=replacement_node
             self._nodes[new_name].post_register_hook()
+
+    # from a link
+    def replace_link(self, old_link, new_link):
+        print ("searching for {} in \n{}".format(old_link, self._links))
+        if old_link in self._links:
+            index=self._links.index(old_link)
+            try:
+                self._links.index(old_link, inde )
+                raise Exception("found a link multiple times on the link list")
+            except:
+                pass
+            self._links.pop(index)
+            self._links.append(new_link)
+        else:
+            raise Exception("this should never happen")
 
 ################################################################################
 # protected

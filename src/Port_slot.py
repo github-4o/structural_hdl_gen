@@ -75,6 +75,16 @@ class Port_slot:
         else:
             self._ext_link.load_implementation(t)
 
+    # from a link
+    def replace_link(self, old_link, new_link):
+        if self._ext_link == old_link:
+            self._ext_link=new_link
+            return
+        if self._int_link == old_link:
+            self._int_link=new_link
+            return
+        raise Exception("this should never happen")
+
 ################################################################################
 # public
 ################################################################################
