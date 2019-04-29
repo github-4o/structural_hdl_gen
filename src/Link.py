@@ -51,22 +51,41 @@ class Link:
         raise Exception("all ports are occupied")
 
     def dump_signals(self, indent):
-        return indent+"signal {}: ;\n".format(self._name)
+        if self._port1.is_internal(self) or self._port2.is_internal(self):
+            return ""
+        else:
+            return self._dump_signals(indent)
 
     # prefix = indent + name
     def dump_ext_ports(self, prefix, dir):
         return prefix+": ;\n"
 
     # prefix = indent + name
-    def dump_ext_port_connections(self, prefix):
-        return prefix+" => {},\n".format(self.name)
+    def dump_ext_port_connections(self, indent, port):
+        if self._port1.is_internal(self) or self._port2.is_internal(self):
+            if port == self._port1:
+                other_name=self._port2.name
+            elif port == self._port2:
+                other_name=self._port1.name
+            else:
+                raise Exception("this should never happen")
+
+            return indent+"{} => {},\n".format(port.name, other_name)
+        else:
+            return indent+"{} => {},\n".format(port.name, self.name)
 
 # from one of the port slots
     def set_dir_for_other_port_slot(self, portdir, ps):
         if ps == self._port1:
-            self._port2.set_dir(portdir)
+            if self._port2.is_internal(self):
+                self._port2.set_dir(portdir, propagate=False)
+            else:
+                self._port2.set_dir(self._invert_dir(portdir), propagate=False)
         elif ps == self._port2:
-            self._port1.set_dir(portdir)
+            if self._port1.is_internal(self):
+                self._port1.set_dir(portdir, propagate=False)
+            else:
+                self._port1.set_dir(self._invert_dir(portdir), propagate=False)
         else:
             raise Exception("this should never happen")
 
@@ -90,6 +109,17 @@ class Link:
         print("loading module {}".format(modulename))
         return import_module(modulename)
 
+    def _dump_signals(self, indent):
+        return indent+"signal {}: ;\n".format(self._name)
+
+    def _invert_dir(self, portdir):
+        if portdir == "in":
+            return "out"
+        elif portdir == "out":
+            return "in"
+        else:
+            raise Exception("this should never happen")
+
 ################################################################################
 # debug
 ################################################################################
@@ -98,8 +128,10 @@ class Link:
         return (
             indent+"link: "+self.name+"\n"
             +indent+"  connects:\n"
-            +indent+"    {}".format(self._port1.full_name)+"\n"
-            +indent+"    {}".format(self._port2.full_name)+"\n"
+            +indent+"    {} internal: {}".format(
+                self._port1.full_name, self._port1.is_internal(self))+"\n"
+            +indent+"    {} internal: {}".format(
+                self._port2.full_name, self._port2.is_internal(self))+"\n"
         )
 
 ################################################################################

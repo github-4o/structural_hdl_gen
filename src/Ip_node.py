@@ -10,8 +10,7 @@ class Ip_node(Node_iface):
             n=prototype
         else:
             n=name
-        super(Ip_node, self).__init__(n)
-        self._parent=parent
+        super(Ip_node, self).__init__(n, parent)
         self._prototype=prototype
         self._module=None
 
@@ -41,6 +40,9 @@ class Ip_node(Node_iface):
         print("loading prototype for {} ({})".format(self._name, modulename))
         print("loading module {}".format(modulename))
         return import_module(modulename)
+
+    def report_my_type(self):
+        return "Ip_node"
 
 ################################################################################
 # fix python

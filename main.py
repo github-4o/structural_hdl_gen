@@ -34,6 +34,7 @@ elif test == 1:
     top_node=Structural_node("dsp_wrap")
     top_node.create_ip_node("comm")
     top_node.load_ifaces()
+    print(top_node.report("comm_0"))
     hdl=top_node.dump()
 else:
     raise Exception("unknown test")

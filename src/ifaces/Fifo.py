@@ -24,13 +24,13 @@ class Fifo(Link):
             )
         )
 
-    def dump_ext_port_connections(self, prefix):
+    def dump_ext_port_connections(self, indent, port):
         return (
-            prefix+"_nd => {}_nd,\n".format(self.name)
-            +prefix+"_data => {}_data,\n".format(self.name)
+            indent+"{}_nd => {}_nd,\n".format(port.name, self.name)
+            +indent+"{}_data => {}_data,\n".format(port.name, self.name)
         )
 
-    def dump_signals(self, indent):
+    def _dump_signals(self, indent):
         return (
             indent+"signal "+self.name+"_nd: std_logic;\n"
             +indent+"signal "+self.name+"_data: std_logic_vector ({} downto 0);\n".format(

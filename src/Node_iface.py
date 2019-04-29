@@ -2,9 +2,10 @@ from .Port import Port
 
 
 class Node_iface:
-    def __init__(self, name):
+    def __init__(self, name, parent):
         self._name=name
         self._ports={}
+        self._parent=parent
 
     @property
     def ports(self):
@@ -30,8 +31,16 @@ class Node_iface:
         self._ports[name].connect_ext_port(link)
 
     def dump_entity(self):
+        my_type=self.report_my_type()
+        print("my type", my_type)
         if len(self._ports) > 0:
-            ports=self._dump_int_ports("        ")
+            if my_type == "Structural_node":
+                ports=self._dump_int_ports("        ")
+            elif my_type == "Ip_node":
+                ports=self._dump_ports("        ")
+            else:
+                raise Exception("this should never happen: {}".format(my_type))
+            ports+="\n"
         else:
             ports=""
 

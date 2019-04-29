@@ -4,8 +4,8 @@ from .Link import Link
 
 
 class Structural_node(Node_iface):
-    def __init__(self, name):
-        super(Structural_node, self).__init__(name)
+    def __init__(self, name, parent=None):
+        super(Structural_node, self).__init__(name, parent)
         self._nodes={}
         self._links=[]
 
@@ -82,7 +82,6 @@ class Structural_node(Node_iface):
 
     # from a link
     def replace_link(self, old_link, new_link):
-        print ("searching for {} in \n{}".format(old_link, self._links))
         if old_link in self._links:
             index=self._links.index(old_link)
             try:
@@ -94,6 +93,22 @@ class Structural_node(Node_iface):
             self._links.append(new_link)
         else:
             raise Exception("this should never happen")
+
+    def report_my_type(self):
+        return "Structural_node"
+
+    def report_my_type(self):
+        return "Structural_node"
+
+################################################################################
+# debug
+################################################################################
+
+    def report(self, node):
+        if node in self._nodes:
+            return self._nodes[node].report()
+        else:
+            return "node {} not found".format(node)
 
 ################################################################################
 # protected

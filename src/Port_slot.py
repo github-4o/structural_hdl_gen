@@ -55,15 +55,16 @@ class Port_slot:
             return ""
 
     def dump_ext_port_connections(self, indent):
-        return self._ext_link.dump_ext_port_connections(indent+self.name)
+        return self._ext_link.dump_ext_port_connections(indent, self)
 
-    def set_dir(self, portdir):
+    def set_dir(self, portdir, propagate=True):
         if self._dir != None:
             if self._dir != portdir:
                 raise Exception("this should never happen")
         else:
             self._dir=portdir
-            self._ext_link.set_dir_for_other_port_slot(self._invert_dir(portdir), self)
+            if propagate:
+                self._ext_link.set_dir_for_other_port_slot(portdir, self)
 
     def set_link_type(self, t):
         if self._ext_link == None:
@@ -85,27 +86,35 @@ class Port_slot:
             return
         raise Exception("this should never happen")
 
-################################################################################
-# public
-################################################################################
+    def is_internal(self, link):
+        return self._int_link == link
 
-    def _invert_dir(self, portdir):
-        if portdir == "in":
-            return "out"
-        elif portdir == "out":
-            return "in"
-        else:
-            raise Exception("this should never happen")
+################################################################################
+# private
+################################################################################
 
 ################################################################################
 # debug
 ################################################################################
 
     def report(self, indent=""):
-        return (
-            indent+"port: "+self.name+"\n"
-            +self._ext_link.report(indent+"  ")
-        )
+        if self._ext_link != None:
+            one=(
+                indent+"ext port: "+self.name+"\n"
+                +self._ext_link.report(indent+"  ")
+            )
+        else:
+            one=""
+
+        if self._int_link != None:
+            two=(
+                indent+"ext port: "+self.name+"\n"
+                +self._int_link.report(indent+"  ")
+            )
+        else:
+            two=""
+
+        return one+two
 
 ################################################################################
 # fix python

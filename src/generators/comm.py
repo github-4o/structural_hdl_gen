@@ -23,22 +23,39 @@ class Comm_node(Ip_node):
             "{}.oRs".format(self.name),
             "{}.oRs".format(self._parent.name)
         )
+        self.set_dir("iRs", "in")
+        self.set_dir("oRs", "out")
+        self.set_link_type("iRs", "Parallel")
+        self.set_link_type("oRs", "Parallel")
 
     def dump(self):
+        ret=self._dump_me()
+        ret+=self._dump_dependencies()
+        return ret
+
+################################################################################
+# private
+################################################################################
+
+    def _dump_me(self):
         return [
             (
                 self.name+".vhd",
                 (
                     "library ieee;\nuse ieee.std_logic_1164.all;\n\n\n"
                     +self.dump_entity()+"\n"
-                    +self.dump_architecture()
+                    +self._dump_architecture()
                 )
             )
         ]
 
-    def dump_architecture(self):
+    def _dump_architecture(self):
         return (
             "architecture v1 of {}".format(self.name)+" is\n"
             +"begin\n"
+            +"    oRs <= iRs;\n"
             +"end v1;\n"
         )
+
+    def _dump_dependencies(self):
+        return []
